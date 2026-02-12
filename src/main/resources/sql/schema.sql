@@ -77,10 +77,3 @@ create table if not exists dish_order
     id_dish  int references dish (id),
     quantity int
 );
-
-create type order_type as enum ('ON_SITE', 'TAKE_AWAY', 'DELIVERY');
-create type order_status as enum ('CREATED', 'CONFIRMED', 'PREPARING', 'DELIVERED');
-
-alter table "order"
-    add column if not exists type order_type,
-    add column if not exists status order_status;
