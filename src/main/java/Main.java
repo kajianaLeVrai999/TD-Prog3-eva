@@ -1,25 +1,29 @@
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 public class Main {
+
     public static void main(String[] args) {
-        DataRetriever dataRetriever = new DataRetriever();
-        Dish saladeVerte = dataRetriever.findDishById(1);
-        System.out.println(saladeVerte);
 
-        Dish poulet = dataRetriever.findDishById(2);
-        System.out.println(poulet);
+        DataRetriever dr = new DataRetriever();
 
-        Dish rizLegume = dataRetriever.findDishById(3);
-        rizLegume.setPrice(100.0);
-        Dish newRizLegume = dataRetriever.saveDish(rizLegume);
-        System.out.println(newRizLegume); // Should not throw exception
+        Instant t = LocalDateTime
+                .parse("2024-01-06T12:00:00")
+                .atZone(ZoneId.systemDefault())
+                .toInstant();
 
+        for (int i = 1; i <= 5; i++) {
 
-//        Dish rizLegumeAgain = dataRetriever.findDishById(3);
-//        rizLegumeAgain.setPrice(null);
-//        Dish savedNewRizLegume = dataRetriever.saveDish(rizLegume);
-//        System.out.println(savedNewRizLegume); // Should throw exception
+            Ingredient ingredient = dr.findIngredientById(i);
 
-        Ingredient laitue = dataRetriever.findIngredientById(1);
-        System.out.println(laitue);
+            double stockOO = ingredient.getStockValueAt(t).getQuantity();
+            double stockDB = dr.getStockValueAt(i, t);
 
+            System.out.println("Ingredient " + i);
+            System.out.println("OO  : " + stockOO);
+            System.out.println("DB  : " + stockDB);
+            System.out.println("----------------------");
+        }
     }
 }

@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -421,4 +422,35 @@ public class DataRetriever {
             ps.executeQuery();
         }
     }
+    public double getStockValueAt(Integer ingredientId, Instant instant) {
+
+        String sql = """
+        SELECT COALESCE(
+            SUM(
+                CASE 
+                    WHEN type = 'IN' THEN quantity
+                    WHEN type = 'OUT' THEN -quantity
+                END
+            ), 0)
+        FROM stock_movement
+        WHERE id_ingredient = ?
+        AND creation_datetime <= ?
+        """;
+
+        try (Connection conn = new DBConnection().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, ingredientId);
+            ps.setTimestamp(2, Timestamp.from(instant));
+
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+
+            return rs.getDouble(1);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
